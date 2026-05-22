@@ -1,15 +1,13 @@
 import { useState } from "react";
 
-const SHEET_ID = "1NLtxz51kgues0mzA9bqi9T7520AfdjEIPyH2JWc2CEs";
+const APPS_SCRIPT_URL = "https://script.google.com/a/macros/mercadolibre.com/s/AKfycbzDNfLJinmZiLl5sYhtF9vPLOjIpspoXs_RAmdPVvMwN0casIyh3nZjpYKg5Tmj1B4W/exec";
 const PAISES = ["MLA","MLM","MLU","MLC","MPE","MCO"];
 
 async function fetchRow(rowNum) {
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&range=A${rowNum}:AX${rowNum}&gid=0`;
+  const url = `${APPS_SCRIPT_URL}?row=${rowNum}`;
   const res = await fetch(url);
-  const text = await res.text();
-  const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-  const cells = json.table.rows[0]?.c || [];
-  return cells.map(c => (c && c.v != null ? String(c.v).trim() : ""));
+  const data = await res.json();
+  return data.map(cell => cell !== null && cell !== undefined ? String(cell).trim() : "");
 }
 
 async function callClaude(apiKey, row, ot) {
